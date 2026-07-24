@@ -1,0 +1,20 @@
+{
+  "AU_DOMINANT.SHF": {
+    "multiplier": 1000.0,
+    "margin_rate": 0.16,
+    "name": "au主力连续",
+    "product": "Commodity"
+  },
+  "CU_DOMINANT.SHF": {
+    "multiplier": 5.0,
+    "margin_rate": 0.09,
+    "name": "cu主力连续",
+    "product": "Commodity"
+  },
+  "RB_DOMINANT.SHF": {
+    "multiplier": 10.0,
+    "margin_rate": 0.06999999999999999,
+    "name": "rb主力连续",
+    "product": "Commodity"
+  }
+}

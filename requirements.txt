@@ -1,0 +1,15 @@
+# 数据处理
+pandas>=2.0
+numpy>=1.24
+
+# ERC 求解（scipy.optimize.minimize SLSQP）
+scipy>=1.10
+
+# 数据源 SDK（需配置 PANDA_DATA_USERNAME / PANDA_DATA_PASSWORD）
+panda_data
+
+# 报告可视化（scripts/report.py, analysis_report.py）
+matplotlib>=3.7
+
+# parquet 读旧版文件 fallback 引擎（离线 fixture 兼容）
+fastparquet

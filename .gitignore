@@ -1,0 +1,15 @@
+# 回测产物（每次运行重新生成）
+reports/
+
+# 联网数据缓存（不入 git，每个人自己拉）
+scripts/fixtures/cache_*.parquet
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# 合成 fixture 入 git（保证离线可复现）
+!scripts/fixtures/sample_assets.parquet
+!scripts/fixtures/sample_future_meta.json
