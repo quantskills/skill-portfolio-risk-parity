@@ -11,6 +11,8 @@ load_all_assets），本模块仅 `from data_loader import load_all_assets` 供 
 """
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
@@ -142,10 +144,17 @@ def solve_erc(Sigma: np.ndarray, ftol: float = ERC_FTOL) -> tuple[np.ndarray, bo
 
     cons = [{"type": "eq", "fun": lambda w: np.sum(w) - 1.0}]
     bounds = [(1e-8, 1.0)] * N                     # long-only，下界微小非零避免奇异
-    res = minimize(obj, w0, method="SLSQP", bounds=bounds, constraints=cons,
-                   options={"maxiter": 1000, "ftol": ftol})
+    # 过滤 SLSQP 噪声警告（线性搜索 directional derivative / maxiter，成功求解时无意义）；
+    # 真正的求解失败由下方 res.success 捕获并显式告警，不在此静默
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        res = minimize(obj, w0, method="SLSQP", bounds=bounds, constraints=cons,
+                       options={"maxiter": 1000, "ftol": ftol})
     w = np.clip(res.x, 0, None)
     w = w / w.sum()                                # 归一消除数值漂移
+    if not res.success:
+        # 未收敛不静默——显式告警（调用方可据此跳过/降级），区别于上面的噪声过滤
+        print(f"[WARN] ERC-SLSQP 未收敛：{res.message}（已归一兜底，结果可能次优）")
     return w, bool(res.success)
 
 

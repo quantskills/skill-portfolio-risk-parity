@@ -168,10 +168,21 @@ def run_backtest(price_df: pd.DataFrame, future_meta: dict | None = None,
     rp_r = curves["rp_daily"].values
     eq_r = curves["eq_daily"].values
 
-    # 样本外风险贡献离散度：用全样本协方差 + 末次权重看均衡性（1.0=完全等风险）
-    last_w = weights_by_date[sorted(weights_by_date.keys())[-1]]
-    Sigma_full, _, _ = ledoit_wolf_shrinkage(ret)
-    rc = risk_contributions(np.array([last_w.get(s, 0.0) for s in ret.columns]), Sigma_full)
+    # 样本外风险贡献离散度：末次调仓权重 + 末次调仓【之后】的样本外协方差
+    # 纯样本外口径（不含训练段）：rc_disp>1 反映协方差漂移导致 ERC 权重在新环境下不再等风险，
+    #   属于风险平价的固有现象，非求解失败。样本外数据不足则降级用全样本，避免协方差奇异。
+    sorted_rebal = sorted(weights_by_date.keys())
+    last_rebal = sorted_rebal[-1]
+    last_w = weights_by_date[last_rebal]
+    last_idx = list(ret.index).index(last_rebal)
+    oos = ret.iloc[last_idx + 1:]                       # 末次调仓之后的纯样本外段
+    if oos.shape[0] >= LOOKBACK_DAYS:
+        Sigma_oos, _, _ = ledoit_wolf_shrinkage(oos)
+        rc_note = f"纯样本外 {oos.shape[0]} 日"
+    else:
+        Sigma_oos, _, _ = ledoit_wolf_shrinkage(ret)    # 样本外太短，降级全样本
+        rc_note = f"样本外不足 {LOOKBACK_DAYS} 日，降级全样本"
+    rc = risk_contributions(np.array([last_w.get(s, 0.0) for s in ret.columns]), Sigma_oos)
     rc_disp = float(rc.max() / rc.min()) if rc.min() > 0 else float("inf")
 
     bench_r = curves.get("bench_daily")
@@ -186,6 +197,7 @@ def run_backtest(price_df: pd.DataFrame, future_meta: dict | None = None,
         "等权_夏普": round(sharpe_ratio(eq_r), 6),
         "波动收敛(RP-等权)": round(annualized_vol(rp_r) - annualized_vol(eq_r), 6),  # 负=RP 波动更低
         "样本外风险贡献离散度": round(rc_disp, 4),
+        "样本外RC离散口径": rc_note,                   # 协方差样本范围（纯样本外 / 降级全样本）
         "调仓次数": len(weights_by_date),
         "lookback": lookback,
         "资产数": ret.shape[1],

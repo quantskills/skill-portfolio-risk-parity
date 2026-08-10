@@ -202,7 +202,7 @@ def render_summary_cards(data: dict) -> str:
     <div class="cards-grid">
       <div class="card"><div class="label">组合年化波动</div><div class="value">{m['RP_年化波动']*100:.2f}<span class="unit">%</span></div></div>
       <div class="card {card_cls}"><div class="label">波动收敛(vs等权)</div><div class="value">{vol_converge*100:+.2f}<span class="unit">%</span></div></div>
-      <div class="card"><div class="label">风险贡献离散度</div><div class="value">{m['样本外风险贡献离散度']:.3f}</div></div>
+      <div class="card" title="末次ERC权重在样本外协方差下的RC离散度；>1 反映协方差漂移（非求解失败）。口径：{m.get('样本外RC离散口径', '样本外')}"><div class="label">风险贡献离散度</div><div class="value">{m['样本外风险贡献离散度']:.3f}</div></div>
       <div class="card"><div class="label">LW 收缩 δ</div><div class="value">{data['lw_shrinkage']:.3f}</div></div>
       <div class="card"><div class="label">年化收益</div><div class="value">{m['RP_年化收益']*100:+.2f}<span class="unit">%</span></div></div>
       <div class="card"><div class="label">最大回撤</div><div class="value neg-text" style="color:#dc2626">{m['RP_最大回撤']*100:.2f}<span class="unit">%</span></div></div>
@@ -284,7 +284,8 @@ def render_html(data: dict, dpi: int) -> str:
 
   <h2>风险贡献（ERC 核心验证）</h2>
   <p class="note">每类资产对组合风险的真实贡献。风险平价的目标是让所有资产的风险贡献相等（= 1/N 红虚线）。
-     若条形高度接近红虚线，说明等风险达成；{'当前离散度 ' + format(data['rc_max_over_min'], '.3f') + '，接近 1.0 即等风险。'}</p>
+     若条形高度接近红虚线，说明等风险达成；{'当前离散度 ' + format(data['rc_max_over_min'], '.3f') + '，接近 1.0 即等风险。'}
+     注：此处为【训练段】均衡性（≈1.0）；样本外因协方差漂移离散度会升高（见上方"风险贡献离散度"卡片）。</p>
   <img src="data:image/png;base64,{img_rc}"/>
 
   <h2>名义权重</h2>
