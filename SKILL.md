@@ -235,3 +235,7 @@ python report.py              # 真实数据 HTML 报告
 - panda_data（数据源 SDK）
 - matplotlib（报告可视化）
 - fastparquet（parquet 读 fallback）
+
+## Pandadata compatibility
+
+[Pandadata 1.0.6 compatibility](references/pandadata-compatibility.md) — exact SDK baseline, validation scope, and shared guidance for all supported agent runtimes.

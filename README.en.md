@@ -225,3 +225,6 @@ Portfolio-level metrics are stored in `DataFrame.attrs`: `portfolio_vol_annual` 
 ## License
 
 [GPL-3.0](LICENSE) © 2026 PandaTest
+
+
+Pandadata compatibility maintenance: [abgyjaguo](https://github.com/abgyjaguo). Existing authorship is retained.

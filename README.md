@@ -229,3 +229,6 @@ pyarrow 与旧版 parquet 不兼容时自动 fallback 到 `fastparquet` 引擎�
 ## License
 
 [GPL-3.0](LICENSE) © 2026 PandaTest
+
+
+Pandadata 兼容维护：[abgyjaguo](https://github.com/abgyjaguo)，保留原项目作者署名。
